@@ -1,0 +1,26 @@
+{
+  "name": "鱼丸公主 · 创作者工作台",
+  "short_name": "鱼丸工作台",
+  "description": "黄莹莹（鱼丸公主）的每日创作工作台 — 任务管理、热点追踪、内容复盘、灵感来源",
+  "start_url": ".",
+  "display": "standalone",
+  "background_color": "#f5f5f0",
+  "theme_color": "#5A6B3A",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "./assets/icon-512.jpg",
+      "sizes": "512x512",
+      "type": "image/jpeg",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "./assets/icon-192.jpg",
+      "sizes": "192x192",
+      "type": "image/jpeg",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["productivity", "lifestyle"],
+  "lang": "zh-CN"
+}
