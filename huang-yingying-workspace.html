@@ -526,7 +526,10 @@ body {
 }
 .trend-stat strong { color: var(--ink); }
 .trend-action { flex-shrink: 0; align-self: center; }
-.trend-action button {
+.trend-action button,
+.trend-action a {
+  display: inline-flex;
+  align-items: center;
   padding: 8px 14px;
   border-radius: var(--radius-xs);
   border: 1px solid var(--primary);
@@ -537,8 +540,10 @@ body {
   transition: all var(--transition);
   white-space: nowrap;
   font-family: inherit;
+  text-decoration: none;
 }
-.trend-action button:hover {
+.trend-action button:hover,
+.trend-action a:hover {
   background: var(--primary); color: #fff;
 }
 
@@ -1350,29 +1355,6 @@ body {
 
       <!-- ========== PANEL: 爆款热点视频/二创 ========== -->
       <div class="panel" id="panel-trends">
-        <!-- 平台一键跳转 -->
-        <div class="platform-jump-bar">
-          <div class="pj-label">🚀 一键跳转平台热点</div>
-          <a class="pj-btn pj-douyin" href="https://www.douyin.com/hot" target="_blank" rel="noopener">
-            <span class="pj-emoji">🎵</span> 抖音热榜
-          </a>
-          <a class="pj-btn pj-xhs" href="https://www.xiaohongshu.com/explore" target="_blank" rel="noopener">
-            <span class="pj-emoji">📕</span> 小红书热门
-          </a>
-          <a class="pj-btn pj-kuaishou" href="https://www.kuaishou.com/" target="_blank" rel="noopener">
-            <span class="pj-emoji">⚡</span> 快手热门
-          </a>
-          <a class="pj-btn pj-shipinhao" href="https://channels.weixin.qq.com/" target="_blank" rel="noopener">
-            <span class="pj-emoji">📹</span> 视频号
-          </a>
-          <a class="pj-btn pj-weibo" href="https://s.weibo.com/top/summary" target="_blank" rel="noopener">
-            <span class="pj-emoji">热搜</span> 微博热搜
-          </a>
-          <a class="pj-btn pj-bilibili" href="https://www.bilibili.com/v/popular/all/" target="_blank" rel="noopener">
-            <span class="pj-emoji">📺</span> B站热门
-          </a>
-        </div>
-
         <div class="grid-2">
           <div>
             <div class="section-title">
@@ -1396,7 +1378,7 @@ body {
                     <span class="trend-stat">视频数 <strong>1.2w</strong></span>
                   </div>
                 </div>
-                <div class="trend-action"><button>一键二创</button></div>
+                <div class="trend-action"><a href="https://www.douyin.com/search/%E9%95%BF%E5%BE%81%E4%B8%89%E5%8F%B7%E4%B9%99%E5%A4%A9%E9%93%BE%E4%BA%8C%E5%8F%B706%E6%98%9F" target="_blank" rel="noopener">一键跳转</a></div>
               </div>
               <div class="trend-item">
                 <div class="trend-rank rank-2">2</div>
@@ -1408,7 +1390,7 @@ body {
                     <span class="trend-stat">视频数 <strong>8.5k</strong></span>
                   </div>
                 </div>
-                <div class="trend-action"><button>一键二创</button></div>
+                <div class="trend-action"><a href="https://www.douyin.com/search/%E4%B8%AD%E7%BE%8E%E6%8E%A2%E8%AE%A8300%E4%BA%BF%E7%BE%8E%E5%85%83%E5%AF%B9%E7%AD%89%E9%99%8D%E7%A8%8E" target="_blank" rel="noopener">一键跳转</a></div>
               </div>
               <div class="trend-item">
                 <div class="trend-rank rank-3">3</div>
@@ -1420,7 +1402,7 @@ body {
                     <span class="trend-stat">视频数 <strong>6.2k</strong></span>
                   </div>
                 </div>
-                <div class="trend-action"><button>一键二创</button></div>
+                <div class="trend-action"><a href="https://www.douyin.com/search/%E8%B5%9B%E9%87%8C%E6%9C%A8%E6%B9%96%E5%B7%A5%E4%BD%9C%E4%BA%BA%E5%91%98%E6%AE%B4%E6%89%93%E6%B8%B8%E5%AE%A2" target="_blank" rel="noopener">一键跳转</a></div>
               </div>
             </div>
 
@@ -1439,7 +1421,7 @@ body {
                     <span class="trend-stat">类型 <strong>文化/旅行</strong></span>
                   </div>
                 </div>
-                <div class="trend-action"><button>一键二创</button></div>
+                <div class="trend-action"><a href="https://www.douyin.com/search/%E5%8F%A4%E8%AF%97%E8%AF%8D%E9%87%8C%E7%9A%84%E4%B8%AD%E5%9B%BD" target="_blank" rel="noopener">一键跳转</a></div>
               </div>
               <div class="trend-item">
                 <div class="trend-rank rank-2">2</div>
@@ -1451,7 +1433,7 @@ body {
                     <span class="trend-stat">类型 <strong>生活/教程</strong></span>
                   </div>
                 </div>
-                <div class="trend-action"><button>一键二创</button></div>
+                <div class="trend-action"><a href="https://www.douyin.com/search/%E6%97%85%E8%A1%8C%E6%8B%8D%E7%85%A7%E5%A7%BF%E5%8A%BF%E5%87%BA%E7%89%87%E6%95%99%E7%A8%8B" target="_blank" rel="noopener">一键跳转</a></div>
               </div>
             </div>
 
@@ -1470,7 +1452,7 @@ body {
                     <span class="trend-stat">热度 <strong>爆</strong></span>
                   </div>
                 </div>
-                <div class="trend-action"><button>一键二创</button></div>
+                <div class="trend-action"><a href="https://www.douyin.com/search/%E5%8D%81%E5%85%AB%E5%B2%81%E5%A4%AA%E5%A5%B6%E5%A5%B6%E9%A9%BE%E5%88%B0" target="_blank" rel="noopener">一键跳转</a></div>
               </div>
               <div class="trend-item">
                 <div class="trend-rank rank-2">2</div>
@@ -1482,7 +1464,7 @@ body {
                     <span class="trend-stat">热度 <strong>爆</strong></span>
                   </div>
                 </div>
-                <div class="trend-action"><button>一键二创</button></div>
+                <div class="trend-action"><a href="https://www.douyin.com/search/%E5%A5%B3%E7%9B%B8%E5%B8%88%E7%9F%AD%E5%89%A7" target="_blank" rel="noopener">一键跳转</a></div>
               </div>
               <div class="trend-item">
                 <div class="trend-rank rank-3">3</div>
@@ -1494,7 +1476,7 @@ body {
                     <span class="trend-stat">热度 <strong>高</strong></span>
                   </div>
                 </div>
-                <div class="trend-action"><button>一键二创</button></div>
+                <div class="trend-action"><a href="https://www.douyin.com/search/%E5%8D%8A%E7%B3%96%E9%9D%92%E6%A2%85%E7%9F%AD%E5%89%A7" target="_blank" rel="noopener">一键跳转</a></div>
               </div>
             </div>
 
@@ -1543,7 +1525,7 @@ body {
                     <span class="trend-stat">📱 <strong>抖音/小红书</strong></span>
                   </div>
                 </div>
-                <div class="trend-action"><button>一键二创</button></div>
+                <div class="trend-action"><a href="https://www.douyin.com/search/%E7%88%B1%E4%BD%A0%E8%80%81%E5%B7%B1" target="_blank" rel="noopener">一键跳转</a></div>
               </div>
               <div class="trend-item">
                 <div class="trend-rank rank-2">2</div>
@@ -1556,7 +1538,7 @@ body {
                     <span class="trend-stat">📱 <strong>抖音/微博</strong></span>
                   </div>
                 </div>
-                <div class="trend-action"><button>一键二创</button></div>
+                <div class="trend-action"><a href="https://www.douyin.com/search/%E5%BC%9F%E5%BC%9F%E8%BF%87%E6%B2%B3%E6%8B%86%E6%A1%A5%E7%88%B8%E7%88%B8" target="_blank" rel="noopener">一键跳转</a></div>
               </div>
               <div class="trend-item">
                 <div class="trend-rank rank-3">3</div>
@@ -1569,7 +1551,7 @@ body {
                     <span class="trend-stat">📱 <strong>全平台</strong></span>
                   </div>
                 </div>
-                <div class="trend-action"><button>一键二创</button></div>
+                <div class="trend-action"><a href="https://www.douyin.com/search/%E5%A6%82%E6%9E%9C%E4%BD%A0%E8%82%AF%E5%90%83%E8%8B%A6%E9%82%A3%E4%BA%AB%E7%A6%8F%E7%9A%84%E5%B0%B1%E5%8F%A6%E6%9C%89%E5%85%B6%E4%BA%BA" target="_blank" rel="noopener">一键跳转</a></div>
               </div>
               <div class="trend-item">
                 <div class="trend-rank rank-other">4</div>
@@ -1582,7 +1564,7 @@ body {
                     <span class="trend-stat">📱 <strong>全平台</strong></span>
                   </div>
                 </div>
-                <div class="trend-action"><button>一键二创</button></div>
+                <div class="trend-action"><a href="https://www.douyin.com/search/%E8%92%B8%E7%AC%BCcity" target="_blank" rel="noopener">一键跳转</a></div>
               </div>
               <div class="trend-item">
                 <div class="trend-rank rank-other">5</div>
@@ -1595,7 +1577,7 @@ body {
                     <span class="trend-stat">📱 <strong>抖音/微博</strong></span>
                   </div>
                 </div>
-                <div class="trend-action"><button>一键二创</button></div>
+                <div class="trend-action"><a href="https://www.douyin.com/search/%E4%BA%BA%E7%94%9F%E5%8F%AA%E6%98%AF%E6%94%AF%E7%BA%BF" target="_blank" rel="noopener">一键跳转</a></div>
               </div>
               <div class="trend-item">
                 <div class="trend-rank rank-other">6</div>
@@ -1608,7 +1590,7 @@ body {
                     <span class="trend-stat">📱 <strong>全平台</strong></span>
                   </div>
                 </div>
-                <div class="trend-action"><button>一键二创</button></div>
+                <div class="trend-action"><a href="https://www.douyin.com/search/%E6%88%91%E7%9A%84%E8%88%8C%E5%A4%B4%E6%9C%89%E7%82%B9%E4%B8%8D%E6%AC%A2%E8%BF%8E%E8%BF%99%E4%B8%80%E7%9B%98%E9%A5%AD%E8%8F%9C" target="_blank" rel="noopener">一键跳转</a></div>
               </div>
               <div class="trend-item">
                 <div class="trend-rank rank-other">7</div>
@@ -1621,7 +1603,7 @@ body {
                     <span class="trend-stat">📱 <strong>小红书/抖音</strong></span>
                   </div>
                 </div>
-                <div class="trend-action"><button>一键二创</button></div>
+                <div class="trend-action"><a href="https://www.douyin.com/search/%E5%88%AB%E7%AE%A1%E8%87%AA%E6%9C%89%E5%AE%89%E6%8E%92" target="_blank" rel="noopener">一键跳转</a></div>
               </div>
               <div class="trend-item">
                 <div class="trend-rank rank-other">8</div>
@@ -1634,7 +1616,7 @@ body {
                     <span class="trend-stat">📱 <strong>抖音/快手</strong></span>
                   </div>
                 </div>
-                <div class="trend-action"><button>一键二创</button></div>
+                <div class="trend-action"><a href="https://www.douyin.com/search/2026%E9%A1%BA%E9%A1%BA%E9%A1%BA%E5%91%A8%E6%B7%B1" target="_blank" rel="noopener">一键跳转</a></div>
               </div>
             </div>
           </div>
