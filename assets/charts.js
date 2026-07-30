@@ -363,8 +363,8 @@
         '</div>' +
         (mat.desc ? '<div style="font-size:13px;color:var(--ink-secondary);line-height:1.5;margin-bottom:14px;padding:10px 12px;background:var(--bg);border-radius:var(--radius-xs);">' + escapeHtml(mat.desc) + '</div>' : '') +
         '<div class="mat-ai-action-row">' +
-          '<button class="analyze" data-id="' + mat.id + '" onclick="requestAIAnalysis(' + mat.id + ')">🤖 AI分析视频</button>' +
-          '<button class="open-link" onclick="window.open(\'' + escapeHtml(mat.url) + '\', \'_blank\')">🔗 打开视频</button>' +
+          '<button class="analyze" data-mat-id="' + mat.id + '">🤖 AI分析视频</button>' +
+          '<button class="open-link" data-mat-url="' + escapeHtml(mat.url) + '">🔗 打开视频</button>' +
         '</div>' +
         '<div class="mat-ai-loading" id="mat-loading-' + mat.id + '">' +
           '<span class="loading-dot"></span>' +
@@ -376,7 +376,7 @@
             '<span class="lbl-text">前5秒分析</span>' +
             '<span class="lbl-tag">开头钩子 · 留存关键</span>' +
           '</div>' +
-          '<textarea class="mat-analysis-textarea" data-id="' + mat.id + '" data-field="hook" placeholder="点击上方"AI分析视频"后，将AI返回的分析结果粘贴到这里...&#10;或手动分析视频前5秒的钩子设计：开头用了什么画面/台词/音效？为什么能留住观众？">' + escapeHtml(mat.hook || '') + '</textarea>' +
+          '<textarea class="mat-analysis-textarea" data-id="' + mat.id + '" data-field="hook" placeholder="点击上方「AI分析视频」后，将AI返回的分析结果粘贴到这里...&#10;或手动分析视频前5秒的钩子设计：开头用了什么画面/台词/音效？为什么能留住观众？">' + escapeHtml(mat.hook || '') + '</textarea>' +
         '</div>' +
         '<div class="mat-analysis-block">' +
           '<div class="mat-analysis-label">' +
@@ -384,7 +384,7 @@
             '<span class="lbl-text">评论区热话题</span>' +
             '<span class="lbl-tag">用户关注点 · 二创方向</span>' +
           '</div>' +
-          '<textarea class="mat-analysis-textarea" data-id="' + mat.id + '" data-field="comment" placeholder="点击上方"AI分析视频"后，将AI返回的评论区分析粘贴到这里...&#10;或手动记录评论区讨论最多的话题：观众在争论什么？什么引发了共鸣？">' + escapeHtml(mat.comment || '') + '</textarea>' +
+          '<textarea class="mat-analysis-textarea" data-id="' + mat.id + '" data-field="comment" placeholder="点击上方「AI分析视频」后，将AI返回的评论区分析粘贴到这里...&#10;或手动记录评论区讨论最多的话题：观众在争论什么？什么引发了共鸣？">' + escapeHtml(mat.comment || '') + '</textarea>' +
         '</div>' +
         '<div class="mat-analysis-block">' +
           '<div class="mat-analysis-label">' +
@@ -403,6 +403,22 @@
         var id = parseInt(this.getAttribute('data-id'));
         materials = materials.filter(function(m) { return m.id !== id; });
         saveMaterials(); renderMaterials();
+      });
+    });
+
+    // Bind AI analysis buttons
+    list.querySelectorAll('.mat-ai-action-row .analyze').forEach(function(el) {
+      el.addEventListener('click', function() {
+        var matId = parseInt(this.getAttribute('data-mat-id'));
+        requestAIAnalysis(matId);
+      });
+    });
+
+    // Bind open-link buttons
+    list.querySelectorAll('.mat-ai-action-row .open-link').forEach(function(el) {
+      el.addEventListener('click', function() {
+        var url = this.getAttribute('data-mat-url');
+        if (url) window.open(url, '_blank');
       });
     });
 
