@@ -26,20 +26,20 @@
 
   function extractUrl(text) {
     if (!text) return '';
-    // 匹配 http/https 链接
-    var urlMatch = text.match(/https?:\/\/[^\s，。、,.)\]]+/i);
+    // 匹配 http/https 链接（不排除小数点，因为URL中包含域名分隔符）
+    var urlMatch = text.match(/https?:\/\/[^\s，。、,)\]]+/i);
     if (urlMatch) return urlMatch[0];
     // 匹配抖音短链接（无协议头）
-    var douyinMatch = text.match(/v\.douyin\.com\/[^\s，。、,.)\]]+/i);
+    var douyinMatch = text.match(/v\.douyin\.com\/[^\s，。、,)\]]+/i);
     if (douyinMatch) return 'https://' + douyinMatch[0];
     // 匹配小红书短链接
-    var xhsMatch = text.match(/xhslink\.com\/[^\s，。、,.)\]]+/i);
+    var xhsMatch = text.match(/xhslink\.com\/[^\s，。、,)\]]+/i);
     if (xhsMatch) return 'https://' + xhsMatch[0];
     // 匹配快手短链接
-    var ksMatch = text.match(/v\.kuaishou\.com\/[^\s，。、,.)\]]+/i);
+    var ksMatch = text.match(/v\.kuaishou\.com\/[^\s，。、,)\]]+/i);
     if (ksMatch) return 'https://' + ksMatch[0];
     // 匹配B站短链接
-    var biliMatch = text.match(/b23\.tv\/[^\s，。、,.)\]]+/i);
+    var biliMatch = text.match(/b23\.tv\/[^\s，。、,)\]]+/i);
     if (biliMatch) return 'https://' + biliMatch[0];
     return '';
   }
