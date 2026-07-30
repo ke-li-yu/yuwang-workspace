@@ -362,13 +362,21 @@
           '<button class="mat-card-delete" data-id="' + mat.id + '">&times;</button>' +
         '</div>' +
         (mat.desc ? '<div style="font-size:13px;color:var(--ink-secondary);line-height:1.5;margin-bottom:14px;padding:10px 12px;background:var(--bg);border-radius:var(--radius-xs);">' + escapeHtml(mat.desc) + '</div>' : '') +
+        '<div class="mat-ai-action-row">' +
+          '<button class="analyze" data-id="' + mat.id + '" onclick="requestAIAnalysis(' + mat.id + ')">🤖 AI分析视频</button>' +
+          '<button class="open-link" onclick="window.open(\'' + escapeHtml(mat.url) + '\', \'_blank\')">🔗 打开视频</button>' +
+        '</div>' +
+        '<div class="mat-ai-loading" id="mat-loading-' + mat.id + '">' +
+          '<span class="loading-dot"></span>' +
+          '<span>分析请求已复制，请粘贴到对话框发送给AI助手</span>' +
+        '</div>' +
         '<div class="mat-analysis-block">' +
           '<div class="mat-analysis-label">' +
             '<span class="lbl-icon hook">🎬</span>' +
             '<span class="lbl-text">前5秒分析</span>' +
             '<span class="lbl-tag">开头钩子 · 留存关键</span>' +
           '</div>' +
-          '<textarea class="mat-analysis-textarea" data-id="' + mat.id + '" data-field="hook" placeholder="分析视频前5秒的钩子设计：开头用了什么画面/台词/音效？为什么能留住观众？&#10;例如：开头3秒用ASMR收音+鱼丸弹跳特写，制造好奇心...">' + escapeHtml(mat.hook || '') + '</textarea>' +
+          '<textarea class="mat-analysis-textarea" data-id="' + mat.id + '" data-field="hook" placeholder="点击上方"AI分析视频"后，将AI返回的分析结果粘贴到这里...&#10;或手动分析视频前5秒的钩子设计：开头用了什么画面/台词/音效？为什么能留住观众？">' + escapeHtml(mat.hook || '') + '</textarea>' +
         '</div>' +
         '<div class="mat-analysis-block">' +
           '<div class="mat-analysis-label">' +
@@ -376,7 +384,7 @@
             '<span class="lbl-text">评论区热话题</span>' +
             '<span class="lbl-tag">用户关注点 · 二创方向</span>' +
           '</div>' +
-          '<textarea class="mat-analysis-textarea" data-id="' + mat.id + '" data-field="comment" placeholder="记录评论区讨论最多的话题：观众在争论什么？什么引发了共鸣？&#10;例如：评论区高频讨论手艺人的坚持，多人提到小时候的味道...">' + escapeHtml(mat.comment || '') + '</textarea>' +
+          '<textarea class="mat-analysis-textarea" data-id="' + mat.id + '" data-field="comment" placeholder="点击上方"AI分析视频"后，将AI返回的评论区分析粘贴到这里...&#10;或手动记录评论区讨论最多的话题：观众在争论什么？什么引发了共鸣？">' + escapeHtml(mat.comment || '') + '</textarea>' +
         '</div>' +
         '<div class="mat-analysis-block">' +
           '<div class="mat-analysis-label">' +
@@ -461,6 +469,81 @@
   }
 
   renderMaterials();
+
+  // ===== AI ANALYSIS REQUEST =====
+  window.requestAIAnalysis = function(matId) {
+    var mat = materials.find(function(m) { return m.id === matId; });
+    if (!mat) return;
+
+    var prompt = '请帮我分析这个视频素材，链接：' + mat.url +
+      (mat.desc ? '\n视频描述：' + mat.desc : '') +
+      '\n\n请从以下两个维度分析：\n' +
+      '1. 【前5秒爆点分析】分析视频开头前5秒的钩子设计：用了什么画面/台词/音效？为什么能留住观众？爆点在哪里？\n' +
+      '2. 【评论区热话题】总结该视频评论区讨论最多的话题：观众在讨论什么？什么引发了共鸣？高频关键词是什么？\n' +
+      '\n请用简洁的要点格式输出，方便我直接复制填入工作台。';
+
+    // Try modern clipboard API
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(prompt).then(function() {
+        showMatToast('✅', '分析请求已复制！\n请粘贴到对话框发送给AI助手', matId);
+      }).catch(function() {
+        fallbackCopy(prompt, matId);
+      });
+    } else {
+      fallbackCopy(prompt, matId);
+    }
+  };
+
+  function fallbackCopy(text, matId) {
+    var ta = document.createElement('textarea');
+    ta.value = text;
+    ta.style.position = 'fixed';
+    ta.style.left = '-9999px';
+    document.body.appendChild(ta);
+    ta.select();
+    try {
+      document.execCommand('copy');
+      showMatToast('✅', '分析请求已复制！\n请粘贴到对话框发送给AI助手', matId);
+    } catch(e) {
+      showMatToast('📋', '请手动复制以下内容发送给AI助手：\n' + text.substring(0, 100) + '...', matId);
+    }
+    document.body.removeChild(ta);
+  }
+
+  function showMatToast(icon, message, matId) {
+    // Show loading indicator on the card
+    if (matId) {
+      var loading = document.getElementById('mat-loading-' + matId);
+      if (loading) loading.classList.add('show');
+    }
+
+    // Remove existing toast
+    var existing = document.querySelector('.mat-toast');
+    if (existing) existing.remove();
+
+    // Create toast
+    var toast = document.createElement('div');
+    toast.className = 'mat-toast';
+    toast.innerHTML =
+      '<span class="toast-icon">' + icon + '</span>' +
+      '<span>' + message + '</span>';
+    document.body.appendChild(toast);
+
+    // Animate in
+    setTimeout(function() { toast.classList.add('show'); }, 10);
+
+    // Auto remove after 4s
+    setTimeout(function() {
+      toast.classList.remove('show');
+      setTimeout(function() {
+        if (toast.parentNode) toast.remove();
+        if (matId) {
+          var loading = document.getElementById('mat-loading-' + matId);
+          if (loading) loading.classList.remove('show');
+        }
+      }, 300);
+    }, 4000);
+  }
 
   // ===== RESIZE =====
   window.addEventListener('resize', function() {
