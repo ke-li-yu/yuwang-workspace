@@ -1,4 +1,4 @@
-const CACHE_NAME = 'yuwang-workspace-v2';
+const CACHE_NAME = 'yuwang-workspace-v3';
 const ASSETS = [
   './huang-yingying-workspace.html',
   './assets/charts.js',
@@ -22,17 +22,22 @@ self.addEventListener('activate', event => {
   );
 });
 
+// Network-first strategy: always fetch latest, fallback to cache when offline
 self.addEventListener('fetch', event => {
+  // Skip non-GET requests
+  if (event.request.method !== 'GET') return;
+
   event.respondWith(
-    caches.match(event.request).then(cached => {
-      const fetchPromise = fetch(event.request).then(response => {
-        if (response && response.status === 200 && response.type === 'basic') {
-          const clone = response.clone();
-          caches.open(CACHE_NAME).then(cache => cache.put(event.request, clone));
-        }
-        return response;
-      }).catch(() => cached);
-      return cached || fetchPromise;
+    fetch(event.request).then(response => {
+      // Only cache successful basic responses
+      if (response && response.status === 200 && response.type === 'basic') {
+        const clone = response.clone();
+        caches.open(CACHE_NAME).then(cache => cache.put(event.request, clone));
+      }
+      return response;
+    }).catch(() => {
+      // Fallback to cache when network fails
+      return caches.match(event.request);
     })
   );
 });
