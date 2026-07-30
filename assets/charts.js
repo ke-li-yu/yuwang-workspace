@@ -46,7 +46,7 @@
   };
 
   // ===== PANEL SWITCHING =====
-  var panelTitles = { daily: '每日计划', inspire: '选题/每日灵感', trends: '爆款热点视频/二创', review: '内容复盘' };
+  var panelTitles = { daily: '每日计划', inspire: '选题/每日灵感', trends: '爆款热点视频/二创', review: '内容复盘', material: '素材积累' };
   window.switchPanel = function(name, el) {
     document.querySelectorAll('.panel').forEach(function(p) { p.classList.remove('active'); });
     document.getElementById('panel-' + name).classList.add('active');
@@ -300,6 +300,151 @@
       }
     ]
   });
+
+  // ===== MATERIAL COLLECTION (localStorage) =====
+  var STORAGE_MAT = 'ywgz_materials_v1';
+
+  function loadMaterials() {
+    try {
+      var raw = localStorage.getItem(STORAGE_MAT);
+      if (raw) return JSON.parse(raw);
+    } catch(e) {}
+    return [];
+  }
+  function saveMaterials() {
+    try { localStorage.setItem(STORAGE_MAT, JSON.stringify(materials)); } catch(e) {}
+  }
+
+  var materials = loadMaterials();
+  var matNextId = materials.reduce(function(mx, m) { return Math.max(mx, m.id); }, 0) + 1;
+
+  function detectPlatform(url) {
+    if (/douyin\.com|iesdouyin\.com/.test(url)) return { key: 'douyin', label: '抖音' };
+    if (/xiaohongshu\.com|xhslink\.com/.test(url)) return { key: 'xhs', label: '小红书' };
+    if (/kuaishou\.com|chenzhongtech\.com|gifshow/.test(url)) return { key: 'kuaishou', label: '快手' };
+    if (/channels\.weixin\.qq\.com|video\.weixin\.qq\.com/.test(url)) return { key: 'shipinhao', label: '视频号' };
+    if (/bilibili\.com|b23\.tv/.test(url)) return { key: 'bilibili', label: 'B站' };
+    if (/weibo\.com|weibo\.cn/.test(url)) return { key: 'weibo', label: '微博' };
+    return { key: 'other', label: '其他' };
+  }
+
+  function escapeHtml(str) {
+    var div = document.createElement('div');
+    div.textContent = str;
+    return div.innerHTML;
+  }
+
+  function renderMaterials() {
+    var list = document.getElementById('mat-list');
+    if (materials.length === 0) {
+      list.innerHTML =
+        '<div class="mat-empty">' +
+          '<div class="empty-icon">📦</div>' +
+          '<div>还没有收集素材</div>' +
+          '<div style="font-size:12px;margin-top:6px;">在上方输入框粘贴视频链接即可开始积累</div>' +
+        '</div>';
+      return;
+    }
+    list.innerHTML = '';
+    materials.forEach(function(mat) {
+      var plat = detectPlatform(mat.url);
+      var card = document.createElement('div');
+      card.className = 'mat-card';
+      card.innerHTML =
+        '<div class="mat-card-header">' +
+          '<div class="mat-card-left">' +
+            '<span class="mat-platform-badge ' + plat.key + '">' + plat.label + '</span>' +
+            '<a href="' + escapeHtml(mat.url) + '" target="_blank" rel="noopener" class="mat-card-link">' + escapeHtml(mat.url) + '</a>' +
+          '</div>' +
+          '<button class="mat-card-delete" data-id="' + mat.id + '">&times;</button>' +
+        '</div>' +
+        '<div class="mat-analysis-block">' +
+          '<div class="mat-analysis-label">' +
+            '<span class="lbl-icon hook">🎬</span>' +
+            '<span class="lbl-text">前5秒分析</span>' +
+            '<span class="lbl-tag">开头钩子 · 留存关键</span>' +
+          '</div>' +
+          '<textarea class="mat-analysis-textarea" data-id="' + mat.id + '" data-field="hook" placeholder="分析视频前5秒的钩子设计：开头用了什么画面/台词/音效？为什么能留住观众？例如：开头3秒用ASMR收音+鱼丸弹跳特写，制造好奇心...">' + escapeHtml(mat.hook || '') + '</textarea>' +
+        '</div>' +
+        '<div class="mat-analysis-block">' +
+          '<div class="mat-analysis-label">' +
+            '<span class="lbl-icon comment">💬</span>' +
+            '<span class="lbl-text">评论区热话题</span>' +
+            '<span class="lbl-tag">用户关注点 · 二创方向</span>' +
+          '</div>' +
+          '<textarea class="mat-analysis-textarea" data-id="' + mat.id + '" data-field="comment" placeholder="记录评论区讨论最多的话题：观众在争论什么？什么引发了共鸣？例如：评论区高频讨论"手艺人的坚持"，多人提到"小时候的味道"...">' + escapeHtml(mat.comment || '') + '</textarea>' +
+        '</div>' +
+        '<div class="mat-analysis-block">' +
+          '<div class="mat-analysis-label">' +
+            '<span class="lbl-icon idea">✨</span>' +
+            '<span class="lbl-text">二创灵感</span>' +
+            '<span class="lbl-tag">我的创意方向</span>' +
+          '</div>' +
+          '<textarea class="mat-analysis-textarea idea" data-id="' + mat.id + '" data-field="idea" placeholder="根据上方分析，写下你的二创灵感：可以从选题角度、拍摄手法、文案改编、BGM选择等方面展开...">' + escapeHtml(mat.idea || '') + '</textarea>' +
+        '</div>';
+      list.appendChild(card);
+    });
+
+    // Bind delete
+    list.querySelectorAll('.mat-card-delete').forEach(function(el) {
+      el.addEventListener('click', function() {
+        var id = parseInt(this.getAttribute('data-id'));
+        materials = materials.filter(function(m) { return m.id !== id; });
+        saveMaterials(); renderMaterials();
+      });
+    });
+
+    // Bind textarea auto-save
+    list.querySelectorAll('.mat-analysis-textarea').forEach(function(el) {
+      el.addEventListener('input', function() {
+        var id = parseInt(this.getAttribute('data-id'));
+        var field = this.getAttribute('data-field');
+        materials.forEach(function(m) {
+          if (m.id === id) { m[field] = this.value; }
+        }.bind(this));
+        saveMaterials();
+      });
+    });
+  }
+
+  window.addMaterial = function() {
+    var input = document.getElementById('mat-link-input');
+    var url = input.value.trim();
+    if (!url) return;
+    // Basic URL validation
+    if (!/^https?:\/\//.test(url) && !/^www\./.test(url)) {
+      // Allow pasted share text that contains a URL
+      var match = url.match(/https?:\/\/[^\s]+/);
+      if (match) {
+        url = match[0];
+      } else {
+        input.style.borderColor = '#dc3545';
+        setTimeout(function() { input.style.borderColor = ''; }, 1500);
+        return;
+      }
+    }
+    materials.unshift({
+      id: matNextId++,
+      url: url,
+      hook: '',
+      comment: '',
+      idea: '',
+      createdAt: new Date().toISOString()
+    });
+    saveMaterials();
+    input.value = '';
+    renderMaterials();
+  };
+
+  // Enter key to add material
+  var matInput = document.getElementById('mat-link-input');
+  if (matInput) {
+    matInput.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter') addMaterial();
+    });
+  }
+
+  renderMaterials();
 
   // ===== RESIZE =====
   window.addEventListener('resize', function() {
