@@ -353,18 +353,22 @@
       card.innerHTML =
         '<div class="mat-card-header">' +
           '<div class="mat-card-left">' +
-            '<span class="mat-platform-badge ' + plat.key + '">' + plat.label + '</span>' +
+            '<div class="mat-card-left-top">' +
+              '<span class="mat-platform-badge ' + plat.key + '">' + plat.label + '</span>' +
+              '<span style="font-size:11px;color:var(--muted);">' + new Date(mat.createdAt || Date.now()).toLocaleDateString('zh-CN') + '</span>' +
+            '</div>' +
             '<a href="' + escapeHtml(mat.url) + '" target="_blank" rel="noopener" class="mat-card-link">' + escapeHtml(mat.url) + '</a>' +
           '</div>' +
           '<button class="mat-card-delete" data-id="' + mat.id + '">&times;</button>' +
         '</div>' +
+        (mat.desc ? '<div style="font-size:13px;color:var(--ink-secondary);line-height:1.5;margin-bottom:14px;padding:10px 12px;background:var(--bg);border-radius:var(--radius-xs);">' + escapeHtml(mat.desc) + '</div>' : '') +
         '<div class="mat-analysis-block">' +
           '<div class="mat-analysis-label">' +
             '<span class="lbl-icon hook">🎬</span>' +
             '<span class="lbl-text">前5秒分析</span>' +
             '<span class="lbl-tag">开头钩子 · 留存关键</span>' +
           '</div>' +
-          '<textarea class="mat-analysis-textarea" data-id="' + mat.id + '" data-field="hook" placeholder="分析视频前5秒的钩子设计：开头用了什么画面/台词/音效？为什么能留住观众？例如：开头3秒用ASMR收音+鱼丸弹跳特写，制造好奇心...">' + escapeHtml(mat.hook || '') + '</textarea>' +
+          '<textarea class="mat-analysis-textarea" data-id="' + mat.id + '" data-field="hook" placeholder="分析视频前5秒的钩子设计：开头用了什么画面/台词/音效？为什么能留住观众？&#10;例如：开头3秒用ASMR收音+鱼丸弹跳特写，制造好奇心...">' + escapeHtml(mat.hook || '') + '</textarea>' +
         '</div>' +
         '<div class="mat-analysis-block">' +
           '<div class="mat-analysis-label">' +
@@ -372,7 +376,7 @@
             '<span class="lbl-text">评论区热话题</span>' +
             '<span class="lbl-tag">用户关注点 · 二创方向</span>' +
           '</div>' +
-          '<textarea class="mat-analysis-textarea" data-id="' + mat.id + '" data-field="comment" placeholder="记录评论区讨论最多的话题：观众在争论什么？什么引发了共鸣？例如：评论区高频讨论"手艺人的坚持"，多人提到"小时候的味道"...">' + escapeHtml(mat.comment || '') + '</textarea>' +
+          '<textarea class="mat-analysis-textarea" data-id="' + mat.id + '" data-field="comment" placeholder="记录评论区讨论最多的话题：观众在争论什么？什么引发了共鸣？&#10;例如：评论区高频讨论手艺人的坚持，多人提到小时候的味道...">' + escapeHtml(mat.comment || '') + '</textarea>' +
         '</div>' +
         '<div class="mat-analysis-block">' +
           '<div class="mat-analysis-label">' +
@@ -409,23 +413,26 @@
 
   window.addMaterial = function() {
     var input = document.getElementById('mat-link-input');
-    var url = input.value.trim();
-    if (!url) return;
-    // Basic URL validation
-    if (!/^https?:\/\//.test(url) && !/^www\./.test(url)) {
-      // Allow pasted share text that contains a URL
-      var match = url.match(/https?:\/\/[^\s]+/);
-      if (match) {
-        url = match[0];
-      } else {
-        input.style.borderColor = '#dc3545';
-        setTimeout(function() { input.style.borderColor = ''; }, 1500);
-        return;
-      }
+    var raw = input.value.trim();
+    if (!raw) return;
+    // Extract URL from pasted share text
+    var url = raw;
+    var desc = '';
+    var match = raw.match(/https?:\/\/[^\s]+/);
+    if (match) {
+      url = match[0];
+      // Save the text before the URL as description
+      desc = raw.replace(/https?:\/\/[^\s]+/, '').trim();
+    } else if (!/^https?:\/\//.test(url) && !/^www\./.test(url)) {
+      // No URL found
+      input.style.borderColor = '#dc3545';
+      setTimeout(function() { input.style.borderColor = ''; }, 1500);
+      return;
     }
     materials.unshift({
       id: matNextId++,
       url: url,
+      desc: desc,
       hook: '',
       comment: '',
       idea: '',
@@ -433,14 +440,23 @@
     });
     saveMaterials();
     input.value = '';
+    input.style.height = 'auto';
     renderMaterials();
   };
 
-  // Enter key to add material
+  // Auto-resize textarea
   var matInput = document.getElementById('mat-link-input');
   if (matInput) {
+    matInput.addEventListener('input', function() {
+      this.style.height = 'auto';
+      this.style.height = Math.max(80, this.scrollHeight) + 'px';
+    });
+    // Ctrl+Enter or Cmd+Enter to add
     matInput.addEventListener('keydown', function(e) {
-      if (e.key === 'Enter') addMaterial();
+      if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+        e.preventDefault();
+        addMaterial();
+      }
     });
   }
 
