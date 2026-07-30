@@ -221,12 +221,10 @@
       '   - 有哪些高频关键词和共鸣点？\n\n' +
       '请先打开视频链接观看，然后给出详细分析。';
 
-    // 尝试复制到剪贴板
+    // 只复制到剪贴板，不自动打开视频链接（避免跳转报错）
     if (navigator.clipboard && navigator.clipboard.writeText) {
       navigator.clipboard.writeText(prompt).then(function() {
-        showToast('分析请求已复制！请粘贴到AI对话框发送', '📋');
-        // 同时打开视频链接
-        window.open(mat.url, '_blank', 'noopener');
+        showGuideToast(mat);
       }).catch(function() {
         fallbackCopy(prompt, mat);
       });
@@ -241,19 +239,71 @@
     ta.value = text;
     ta.style.position = 'fixed';
     ta.style.left = '-9999px';
+    ta.style.top = '0';
     document.body.appendChild(ta);
     ta.select();
+    ta.setSelectionRange(0, ta.value.length);
     try {
       document.execCommand('copy');
-      showToast('分析请求已复制！请粘贴到AI对话框发送', '📋');
+      showGuideToast(mat);
     } catch(e) {
-      showToast('复制失败，请手动复制分析请求', '⚠️');
+      showToast('复制失败，请长按上方链接手动复制', '⚠️');
     }
     document.body.removeChild(ta);
-    // 打开视频链接
-    if (mat && mat.url) {
-      window.open(mat.url, '_blank', 'noopener');
-    }
+  }
+
+  // 显示操作指引弹窗（比普通toast更持久）
+  function showGuideToast(mat) {
+    var existing = document.getElementById('mat-guide-overlay');
+    if (existing) existing.remove();
+
+    var overlay = document.createElement('div');
+    overlay.id = 'mat-guide-overlay';
+    overlay.style.cssText =
+      'position:fixed;bottom:0;left:0;right:0;z-index:9999;' +
+      'background:rgba(45,45,45,0.5);padding:20px 16px ' +
+      'calc(20px + env(safe-area-inset-bottom));' +
+      'display:flex;justify-content:center;align-items:flex-end;';
+
+    var box = document.createElement('div');
+    box.style.cssText =
+      'background:#fff;border-radius:16px;padding:24px 20px;max-width:400px;width:100%;' +
+      'box-shadow:0 8px 40px rgba(0,0,0,0.25);';
+
+    var platform = detectPlatform(mat.url);
+    box.innerHTML =
+      '<div style="text-align:center;margin-bottom:16px;">' +
+        '<span style="font-size:40px;">📋</span>' +
+      '</div>' +
+      '<div style="font-size:16px;font-weight:700;color:#2d2d2d;text-align:center;margin-bottom:14px;">' +
+        '分析请求已复制到剪贴板！' +
+      '</div>' +
+      '<div style="font-size:13px;color:#5a6b3a;line-height:2;margin-bottom:16px;">' +
+        '<div style="margin-bottom:8px;"><b>接下来请按以下步骤操作：</b></div>' +
+        '<div>① 切换到AI助手对话框</div>' +
+        '<div>② 长按输入框 → 粘贴</div>' +
+        '<div>③ 发送给AI，等待分析结果</div>' +
+        '<div>④ 将分析结果复制回工作台对应栏位</div>' +
+      '</div>' +
+      '<div style="font-size:12px;color:#8c8c8c;margin-bottom:16px;padding:10px;background:#f7f7f4;border-radius:8px;">' +
+        '提示：如需打开视频，请点击卡片上的「🔗 打开视频」按钮' +
+      '</div>' +
+      '<button id="mat-guide-close" style="' +
+        'width:100%;padding:14px;border:none;border-radius:10px;' +
+        'background:#5A6B3A;color:#fff;font-size:14px;font-weight:600;' +
+        'cursor:pointer;font-family:inherit;">我知道了</button>';
+
+    overlay.appendChild(box);
+    document.body.appendChild(overlay);
+
+    // 点击遮罩或按钮关闭
+    overlay.addEventListener('click', function(e) {
+      if (e.target === overlay || e.target.id === 'mat-guide-close' || e.target.closest('#mat-guide-close')) {
+        overlay.style.transition = 'opacity 0.25s';
+        overlay.style.opacity = '0';
+        setTimeout(function() { overlay.remove(); }, 250);
+      }
+    });
   }
 
   // ===== 添加素材 =====

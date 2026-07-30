@@ -1,4 +1,4 @@
-const CACHE_NAME = 'yuwang-workspace-v4';
+const CACHE_NAME = 'yuwang-workspace-v5';
 const ASSETS = [
   './huang-yingying-workspace.html',
   './assets/charts.js',
